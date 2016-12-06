@@ -28,6 +28,7 @@ FB_ACCESS_TOKEN=xxx
 ## Happy crawling
 
 ```
+yarn run build
 yarn start
 ```
 
