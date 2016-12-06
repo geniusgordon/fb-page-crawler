@@ -26,7 +26,7 @@ export async function fetchAndSavePosts() {
       count += res.data.length;
       spinner.text = `Save posts ${from} ~ ${count}`;
       spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
-      if (res.data.length < limit) {
+      if (!res.paging) {
         break;
       }
     } catch (error) {
