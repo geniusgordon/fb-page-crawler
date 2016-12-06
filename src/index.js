@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
-import { db, fb, fetchAndSavePosts } from './lib';
+import chalk from 'chalk';
+import { db, fetchAndSavePosts } from './lib';
 
 dotenv.config({ silent: true });
 

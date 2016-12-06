@@ -1,5 +1,8 @@
+import dotenv from 'dotenv';
 import FB from 'fb';
 import url from 'url';
+
+dotenv.config({ silent: true });
 const pageId = process.env.FB_PAGE_ID;
 const accessToken = process.env.FB_ACCESS_TOKEN;
 
