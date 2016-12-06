@@ -1,4 +1,3 @@
-require('dotenv').config();
 import FB from 'fb';
 import url from 'url';
 const pageId = process.env.FB_PAGE_ID;
@@ -21,7 +20,7 @@ export function checkPageIdAndAccessToken() {
   return FB.apiP(`${pageId}`);
 }
 
-export async function getPageFeed(options) {
+export async function fetchPosts(options) {
   const res = await FB.apiP(`${pageId}/feed`, Object.assign({}, options));
   const paging = res.paging ? url.parse(res.paging.next, true).query : null;
   return Object.assign(res, { paging });

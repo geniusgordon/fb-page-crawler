@@ -53,4 +53,5 @@ jspm_packages
 .env
 yarn.lock
 dist/
+*.sqlite
 

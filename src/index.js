@@ -1,36 +1,18 @@
+import dotenv from 'dotenv';
 import ora from 'ora';
 import chalk from 'chalk';
-import { getPageFeed } from './lib/fb';
+import { fetchAndSaveAllPosts, syncDb } from './lib';
+
+dotenv.config({ silent: true });
 
 function logError(error) {
-  console.error(chalk.bgRed(' ERROR '), error);
+  console.error(chalk.black.bgRed(' ERROR '), error);
 }
 
-async function fetchAllFeeds() {
-  const limit = 10;
-  const options = { limit };
-  let data = [];
-  while (true) {
-    const from = data.length + 1;
-    const to = data.length + limit;
-    const spinner = ora(`Feed ${from} ~ ${to}`);
-    spinner.spinner = { frames: [chalk.black.bgYellow(' FETCH ')] };
-    spinner.start();
-    try {
-      let res = await getPageFeed(options);
-      data = data.concat(res.data);
-      Object.assign(options, res.paging);
-      spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
-      if (res.data.length < limit) {
-        break;
-      }
-    } catch (error) {
-      spinner.fail();
-      throw(error);
-    }
-  }
-  return data;
+async function main() {
+  await syncDb();
+  await fetchAndSaveAllPosts();
 }
 
-fetchAllFeeds().catch(logError);
+main().catch(logError);
 
