@@ -3,8 +3,12 @@ import chalk from 'chalk';
 import * as fb from './fb';
 import * as db from './db';
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export async function fetchAndSavePosts() {
-  const limit = 100;
+  const limit = 10;
   const options = { limit };
   let count = 0;
   while (true) {
@@ -29,6 +33,7 @@ export async function fetchAndSavePosts() {
       if (res.data.length < limit) {
         break;
       }
+      await delay(500);
     } catch (error) {
       spinner.stopAndPersist(chalk.black.bgRed(' ERROR '));
       throw(error);
