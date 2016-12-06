@@ -1,0 +1,29 @@
+{
+  "name": "fb-page-crawler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src --out-dir dist",
+    "start": "node dist"
+  },
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "dotenv": "^2.0.0",
+    "fb": "^1.1.1",
+    "ora": "^0.3.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-env": "^0.0.9"
+  },
+  "babel": {
+    "presets": [
+      ["env", {
+        "targets": {
+          "node": "current"
+        }
+      }]
+    ]
+  }
+}

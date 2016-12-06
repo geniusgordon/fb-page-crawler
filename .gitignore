@@ -51,4 +51,6 @@ jspm_packages
 .yarn-integrity
 
 .env
+yarn.lock
+dist/
 
