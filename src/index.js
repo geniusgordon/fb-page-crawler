@@ -1,7 +1,5 @@
 import dotenv from 'dotenv';
-import ora from 'ora';
-import chalk from 'chalk';
-import { fetchAndSaveAllPosts, syncDb } from './lib';
+import { db, fb, fetchAndSavePosts } from './lib';
 
 dotenv.config({ silent: true });
 
@@ -10,8 +8,8 @@ function logError(error) {
 }
 
 async function main() {
-  await syncDb();
-  await fetchAndSaveAllPosts();
+  await db.syncDb();
+  await fetchAndSavePosts();
 }
 
 main().catch(logError);

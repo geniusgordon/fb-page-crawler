@@ -3,7 +3,26 @@ import url from 'url';
 const pageId = process.env.FB_PAGE_ID;
 const accessToken = process.env.FB_ACCESS_TOKEN;
 
-FB.setAccessToken(accessToken)
+const fields = `
+  message,
+  created_time,
+  reactions,
+  comments {
+    like_count,
+    message,
+    from,
+    created_time,
+    comments {
+      like_count,
+      message,
+      from,
+      created_time
+    }
+  }
+`;
+
+FB.options({ version: 'v2.8' });
+FB.setAccessToken(accessToken);
 
 FB.apiP = (...args) =>
   new Promise((resolve, reject) => {
@@ -21,7 +40,7 @@ export function checkPageIdAndAccessToken() {
 }
 
 export async function fetchPosts(options) {
-  const res = await FB.apiP(`${pageId}/feed`, Object.assign({}, options));
+  const res = await FB.apiP(`${pageId}/feed`, Object.assign({ fields }, options));
   const paging = res.paging ? url.parse(res.paging.next, true).query : null;
   return Object.assign(res, { paging });
 }
