@@ -5,56 +5,39 @@ export async function syncDb() {
   await db.sync();
 }
 
-async function saveUser(user) {
+async function saveUser(values) {
+  const user = pick(['id', 'name'], values);
   spinner.text = `Save user: ${user.id}`;
-  await User.upsert(pick(['id', 'name'], user));
+  await User.upsert(user);
   return user;
 }
 
-async function saveComment(comment, post) {
-  const user = await saveUser(comment.from);
-  await Comment.upsert(
-    Object.assign({
-      userId: user.id,
-      postId: post.id,
-    }, pick(['id', 'message', 'like_count', 'parent', 'created_time'], comment))
-  );
-  if (comment.comments) {
-    for (let c of comment.comments.data) {
-      spinner.text = `Save comment: ${c.id}`;
-      await saveComment(Object.assign({ parent: comment.id }, c), post);
-    }
-  }
+async function saveComment(values, post) {
+  const user = await saveUser(values.from);
+  const comment = Object.assign({
+    userId: user.id,
+    postId: post.id,
+  }, pick(['id', 'message', 'like_count', 'parent', 'created_time'], values));
+  spinner.text = `Save comment: ${comment.id}`;
+  await Comment.upsert(comment);
   return comment;
 }
 
-async function saveReaction(reaction, post) {
-  const user = await saveUser(reaction);
-  await Reaction.upsert(
-    Object.assign({
-      userId: user.id,
-      postId: post.id,
-    }, pick(['type'], reaction))
-  );
+async function saveReaction(values, post) {
+  const user = await saveUser(values);
+  const reaction = Object.assign({
+    userId: user.id,
+    postId: post.id,
+  }, pick(['type'], values));
+  spinner.text = `Save reaction: ${reaction.type}`;
+  await Reaction.upsert(reaction);
   return reaction;
 }
 
-export async function savePost(post) {
+export async function savePost(values) {
+  const post = pick(['id', 'message', 'created_time'], values);
   spinner.text = `Save post: ${post.id}`;
-  const { reactions, comments } = post;
-  await Post.upsert(pick(['id', 'message', 'created_time'], post));
-  if (reactions) {
-    for (let reaction of reactions.data) {
-      spinner.text = `Save reaction: ${reaction.type}`;
-      await saveReaction(reaction, post);
-    }
-  }
-  if (comments) {
-    for (let comment of comments.data) {
-      spinner.text = `Save comment: ${comment.id}`;
-      await saveComment(comment, post);
-    }
-  }
+  await Post.upsert(post);
   return post;
 }
 
