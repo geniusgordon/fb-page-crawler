@@ -1,6 +1,7 @@
 export default (sequelize, DataTypes) =>
   sequelize.define('reaction', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    userId: { type: DataTypes.STRING(20), primaryKey: true },
+    postId: { type: DataTypes.STRING(40), primaryKey: true },
     type: DataTypes.ENUM('NONE', 'LIKE', 'LOVE', 'WOW', 'HAHA', 'SAD', 'ANGRY', 'THANKFUL'),
   }, {
     timestamps: false,
