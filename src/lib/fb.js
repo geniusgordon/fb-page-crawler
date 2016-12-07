@@ -10,7 +10,10 @@ FB.apiP = (...args) =>
         reject(!res ? new Error(args.toString()) : res.error);
         return;
       }
-      const paging = res.paging ? url.parse(res.paging.next, true).query : null;
+      let paging = null;
+      if (res.paging && res.paging.next) {
+        paging = url.parse(res.paging.next, true).query;
+      }
       resolve(Object.assign(res, { paging }));
     });
   });
