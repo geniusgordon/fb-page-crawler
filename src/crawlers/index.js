@@ -1,15 +1,18 @@
 import ora from 'ora';
 import chalk from 'chalk';
+import get from 'lodash/fp/get';
 import { fb, db } from '../lib/';
 
 const noop = () => {};
+const getId = get('id');
 
-function createCrawler(edge, saveItem = noop) {
+function createCrawler(edge, getDisplayName = getId, saveData = noop) {
   return async (id, options = {}, meta = {}) => {
     const limit = options.limit || 25;
     let data = [];
+    let spinner;
     while (true) {
-      const spinner = ora(`Fetch ${limit} ${edge} ${id}`);
+      spinner = ora(`Fetch ${limit} ${edge} ${id}`);
       spinner.spinner = { frames: [chalk.black.bgYellow(' RUN ')] };
       spinner.start();
       try {
@@ -19,22 +22,21 @@ function createCrawler(edge, saveItem = noop) {
           spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
           break;
         }
-
-        const length = res.data.length;
-        spinner.text = `Save ${length} ${edge} ${id}`;
-        spinner.spinner = { frames: [chalk.black.bgYellow(' RUN ')] };
-        for (let item of res.data) {
-          spinner.text = `Save ${edge} ${item.id}`;
-          await saveItem(item, meta);
-        }
-        data = data.concat(res.data);
-        Object.assign(options, res.paging);
-        spinner.text = `Save ${length} ${edge} ${id}`;
+        const last = res.data[res.data.length - 1];
+        spinner.text = `Fetch ${res.data.length} ${edge} ${id} ${getDisplayName(last)}`;
         spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
-
         if(!res.paging) {
           break;
         }
+
+        spinner = ora(`Save ${res.data.length} ${edge} ${id} ${getDisplayName(last)}`);
+        spinner.spinner = { frames: [chalk.black.bgYellow(' RUN ')] };
+        spinner.start();
+        const savedData = await saveData(res.data);
+        spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
+
+        data = data.concat(savedData);
+        Object.assign(options, res.paging);
       } catch (error) {
         spinner.stopAndPersist(chalk.black.bgRed(' ERROR '));
         throw(error);
@@ -44,9 +46,9 @@ function createCrawler(edge, saveItem = noop) {
   };
 }
 
-const crawlPosts = createCrawler('posts', db.savePost);
-const crawlComments = createCrawler('comments', db.saveComment);
-const crawlReactions = createCrawler('reactions', db.saveReaction);
+const crawlPosts = createCrawler('posts', get('created_time'), db.savePosts);
+const crawlComments = createCrawler('comments', get('created_time'), db.saveComments);
+const crawlReactions = createCrawler('reactions', get('id'), db.saveReactions);
 
 export { crawlPosts, crawlComments, crawlReactions };
 
