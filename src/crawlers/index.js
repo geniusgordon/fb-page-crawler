@@ -25,18 +25,17 @@ function createCrawler(edge, getDisplayName = getId, saveData = noop) {
         const last = res.data[res.data.length - 1];
         spinner.text = `Fetch ${res.data.length} ${edge} ${id} ${getDisplayName(last)}`;
         spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
-        if(!res.paging) {
-          break;
-        }
-
         spinner = ora(`Save ${res.data.length} ${edge} ${id} ${getDisplayName(last)}`);
         spinner.spinner = { frames: [chalk.black.bgYellow(' RUN ')] };
         spinner.start();
-        const savedData = await saveData(res.data);
+        const savedData = await saveData(res.data, meta);
         spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
-
         data = data.concat(savedData);
         Object.assign(options, res.paging);
+
+        if(!res.paging) {
+          break;
+        }
       } catch (error) {
         spinner.stopAndPersist(chalk.black.bgRed(' ERROR '));
         throw(error);
