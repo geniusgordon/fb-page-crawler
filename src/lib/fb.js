@@ -11,7 +11,7 @@ FB.apiP = (...args) =>
         return;
       }
       const paging = res.paging ? url.parse(res.paging.next, true).query : null;
-      resolve(Object.assign(res, { paging });
+      resolve(Object.assign(res, { paging }));
     });
   });
 

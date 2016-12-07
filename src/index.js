@@ -1,8 +1,13 @@
 import dotenv from 'dotenv';
 import chalk from 'chalk';
-import { db, fetchAndSavePosts } from './lib';
+import { fb, db } from './lib';
+import { crawlPosts } from './crawlers';
 
 dotenv.config({ silent: true });
+
+const accessToken = process.env.FB_ACCESS_TOKEN;
+const pageId = process.env.FB_PAGE_ID;
+fb.setAccessToken(accessToken);
 
 function logError(error) {
   console.error(chalk.black.bgRed(' ERROR '), error);
@@ -10,7 +15,7 @@ function logError(error) {
 
 async function main() {
   await db.syncDb();
-  await fetchAndSavePosts();
+  const posts = await crawlPosts(pageId);
 }
 
 main().catch(logError);
