@@ -6,7 +6,7 @@ export async function syncDb() {
   await db.sync();
 }
 
-function createLazySaveFn(saveFn, threshold) {
+export function createLazySaveFn(saveFn, threshold) {
   let memoizedItems = [];
   const save = async () => {
     const saved = memoizedItems.length;
