@@ -6,23 +6,46 @@ export async function syncDb() {
   await db.sync();
 }
 
-export async function saveUsers(items) {
-  const users = items.map(pick(['id', 'name']));
-  await User.bulkCreate(users, { ignoreDuplicates: true });
-  return users;
+function createLazySaveFn(saveFn, threshold) {
+  let memoizedItems = [];
+  const save = async () => {
+    await saveFn(memoizedItems);
+    memoizedItems = [];
+  };
+  const fn = async (items) => {
+    memoizedItems = memoizedItems.concat(items);
+    if (memoizedItems.length >= threshold) {
+      await save();
+    }
+  };
+  fn.flush = async () => {
+    await save();
+  };
+  return fn;
 }
 
+export function saveUsers(items) {
+  const users = items.map(pick(['id', 'name']));
+  return User.bulkCreate(users, { ignoreDuplicates: true });
+}
+
+const lazySaveComments = createLazySaveFn(comments =>
+  Comment.bulkCreate(comments, { ignoreDuplicates: true }), 1000);
+
 export async function saveComments(items, meta) {
-  const users = await saveUsers(items.map(get(from)));
+  const users = await saveUsers(items.map(get('from')));
   const comments = items.map(item =>
     Object.assign({
       userId: item.from.id,
       postId: meta.postId,
     }, pick(['id', 'message', 'like_count', 'parent', 'created_time'], item))
   );
-  await Comment.bulkCreate(comments, { ignoreDuplicates: true });
-  return comments;
+  return lazySaveComments(comments);
 }
+saveComments.flush = lazySaveComments.flush;
+
+const lazySaveReactions = createLazySaveFn(reactions =>
+  Reaction.bulkCreate(reactions, { ignoreDuplicates: true }), 1000);
 
 export async function saveReactions(items, meta) {
   const users = await saveUsers(items);
@@ -32,9 +55,9 @@ export async function saveReactions(items, meta) {
       postId: meta.postId,
     }, pick(['type'], item))
   );
-  await Reaction.bulkCreate(reactions, { ignoreDuplicates: true });
-  return reactions;
+  return lazySaveReactions(reactions);
 }
+saveReactions.flush = lazySaveReactions.flush;
 
 export async function savePosts(items) {
   const posts = items.map(pick(['id', 'message', 'created_time']));

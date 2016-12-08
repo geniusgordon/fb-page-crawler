@@ -1,6 +1,7 @@
 import ora from 'ora';
 import chalk from 'chalk';
 import get from 'lodash/fp/get';
+import constant from 'lodash/fp/constant';
 import { fb, db } from '../lib/';
 
 const noop = () => {};
@@ -28,9 +29,9 @@ function createCrawler(edge, getDisplayName = getId, saveData = noop) {
         spinner = ora(`Save ${res.data.length} ${edge} ${id} ${getDisplayName(last)}`);
         spinner.spinner = { frames: [chalk.black.bgYellow(' RUN ')] };
         spinner.start();
-        const savedData = await saveData(res.data, meta);
+        await saveData(res.data, meta);
         spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
-        data = data.concat(savedData);
+        data = data.concat(res.data);
         Object.assign(options, res.paging);
 
         if(!res.paging) {
@@ -47,7 +48,7 @@ function createCrawler(edge, getDisplayName = getId, saveData = noop) {
 
 const crawlPosts = createCrawler('posts', get('created_time'), db.savePosts);
 const crawlComments = createCrawler('comments', get('created_time'), db.saveComments);
-const crawlReactions = createCrawler('reactions', get('id'), db.saveReactions);
+const crawlReactions = createCrawler('reactions', constant(''), db.saveReactions);
 
 export { crawlPosts, crawlComments, crawlReactions };
 
