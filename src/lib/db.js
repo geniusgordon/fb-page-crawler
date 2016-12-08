@@ -9,18 +9,19 @@ export async function syncDb() {
 function createLazySaveFn(saveFn, threshold) {
   let memoizedItems = [];
   const save = async () => {
+    const saved = memoizedItems.length;
     await saveFn(memoizedItems);
     memoizedItems = [];
+    return saved;
   };
-  const fn = async (items) => {
+  const fn = (items) => {
     memoizedItems = memoizedItems.concat(items);
     if (memoizedItems.length >= threshold) {
-      await save();
+      return save();
     }
+    return 0;
   };
-  fn.flush = async () => {
-    await save();
-  };
+  fn.flush = save;
   return fn;
 }
 

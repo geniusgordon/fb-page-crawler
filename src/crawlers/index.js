@@ -26,11 +26,10 @@ function createCrawler(edge, getDisplayName = getId, saveData = noop) {
         const last = res.data[res.data.length - 1];
         spinner.text = `Fetch ${res.data.length} ${edge} ${id} ${getDisplayName(last)}`;
         spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
-        spinner = ora(`Save ${res.data.length} ${edge} ${id} ${getDisplayName(last)}`);
-        spinner.spinner = { frames: [chalk.black.bgYellow(' RUN ')] };
-        spinner.start();
-        await saveData(res.data, meta);
-        spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
+        const saved = await saveData(res.data, meta);
+        if (saved > 0) {
+          console.log(chalk.black.bgGreen(' DONE '), `Lazy save ${saved} ${edge} ${getDisplayName(last)}`);
+        }
         data = data.concat(res.data);
         Object.assign(options, res.paging);
 
