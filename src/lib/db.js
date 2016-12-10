@@ -1,10 +1,8 @@
 import get from 'lodash/fp/get';
 import pick from 'lodash/fp/pick';
-import db, { User, Post, Comment, Reaction } from '../models';
+import sequelize, { User, Post, Comment, Reaction } from '../models';
 
-export async function syncDb() {
-  await db.sync();
-}
+export { sequelize };
 
 export function createLazySaveFn(saveFn, threshold) {
   let memoizedItems = [];

@@ -11,7 +11,7 @@ function logError(error) {
 }
 
 async function main() {
-  await db.syncDb();
+  await db.sequelize.sync();
   const posts = await crawler.crawlPosts(pageId);
   for (let post of posts) {
     await crawler.crawlReactions(post.id, {}, { postId: post.id });
