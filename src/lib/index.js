@@ -1,5 +1,5 @@
-import fb from './fb';
-import * as db from './db';
+const fb = require('./fb');
+const db = require('./db');
 
-export { fb, db };
+module.exports = { fb, db };
 

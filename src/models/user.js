@@ -1,4 +1,4 @@
-export default (sequelize, DataTypes) =>
+module.exports = (sequelize, DataTypes) =>
   sequelize.define('user', {
     id: { type: DataTypes.STRING(20), primaryKey: true },
     name: DataTypes.STRING,

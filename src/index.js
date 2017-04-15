@@ -1,6 +1,7 @@
-import chalk from 'chalk';
-import { fb, db } from './lib';
-import * as crawler from './crawlers';
+require('dotenv').config()
+const chalk = require('chalk');
+const { fb, db } = require('./lib');
+const crawler = require('./crawlers');
 
 const accessToken = process.env.FB_ACCESS_TOKEN;
 const pageId = process.env.FB_PAGE_ID;

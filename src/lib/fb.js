@@ -1,5 +1,5 @@
-import FB from 'fb';
-import url from 'url';
+const FB = require('fb');
+const url = require('url');
 
 FB.options({ version: 'v2.8' });
 
@@ -18,5 +18,5 @@ FB.apiP = (...args) =>
     });
   });
 
-export default FB;
+module.exports = FB;
 

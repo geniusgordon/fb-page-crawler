@@ -1,10 +1,8 @@
-import get from 'lodash/fp/get';
-import pick from 'lodash/fp/pick';
-import sequelize, { User, Post, Comment, Reaction } from '../models';
+const get = require('lodash/fp/get');
+const pick = require('lodash/fp/pick');
+const { sequelize, User, Post, Comment, Reaction } = require('../models');
 
-export { sequelize };
-
-export function createLazySaveFn(saveFn, threshold) {
+function createLazySaveFn(saveFn, threshold) {
   let memoizedItems = [];
   const save = async () => {
     const saved = memoizedItems.length;
@@ -23,7 +21,7 @@ export function createLazySaveFn(saveFn, threshold) {
   return fn;
 }
 
-export function saveUsers(items) {
+function saveUsers(items) {
   const users = items.map(pick(['id', 'name']));
   return User.bulkCreate(users, { ignoreDuplicates: true });
 }
@@ -31,7 +29,7 @@ export function saveUsers(items) {
 const lazySaveComments = createLazySaveFn(comments =>
   Comment.bulkCreate(comments, { ignoreDuplicates: true }), 1000);
 
-export async function saveComments(items, meta) {
+async function saveComments(items, meta) {
   const users = await saveUsers(items.map(get('from')));
   const comments = items.map(item =>
     Object.assign({
@@ -46,7 +44,7 @@ saveComments.flush = lazySaveComments.flush;
 const lazySaveReactions = createLazySaveFn(reactions =>
   Reaction.bulkCreate(reactions, { ignoreDuplicates: true }), 1000);
 
-export async function saveReactions(items, meta) {
+async function saveReactions(items, meta) {
   const users = await saveUsers(items);
   const reactions = items.map(item =>
     Object.assign({
@@ -58,9 +56,18 @@ export async function saveReactions(items, meta) {
 }
 saveReactions.flush = lazySaveReactions.flush;
 
-export async function savePosts(items) {
+async function savePosts(items) {
   const posts = items.map(pick(['id', 'message', 'created_time']));
   await Post.bulkCreate(posts, { ignoreDuplicates: true });
   return posts;
 }
+
+module.exports = {
+  createLazySaveFn,
+  saveUsers,
+  saveComments,
+  saveReactions,
+  savePosts,
+  sequelize,
+};
 

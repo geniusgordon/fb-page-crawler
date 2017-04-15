@@ -1,4 +1,4 @@
-export default (sequelize, DataTypes) =>
+module.exports = (sequelize, DataTypes) =>
   sequelize.define('post', {
     id: { type: DataTypes.STRING(40), primaryKey: true },
     message: DataTypes.TEXT,

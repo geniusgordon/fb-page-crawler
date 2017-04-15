@@ -1,4 +1,4 @@
-import { createLazySaveFn } from '../db';
+const { createLazySaveFn } = require('../db');
 
 describe('createLazySaveFn', () => {
   it('should save lazily', async () => {

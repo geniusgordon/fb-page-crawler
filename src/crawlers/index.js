@@ -1,8 +1,8 @@
-import ora from 'ora';
-import chalk from 'chalk';
-import get from 'lodash/fp/get';
-import constant from 'lodash/fp/constant';
-import { fb, db } from '../lib/';
+const ora = require('ora');
+const chalk = require('chalk');
+const get = require('lodash/fp/get');
+const constant = require('lodash/fp/constant');
+const { fb, db } = require('../lib/');
 
 const noop = () => {};
 const getId = get('id');
@@ -49,5 +49,5 @@ const crawlPosts = createCrawler('posts', get('created_time'), db.savePosts);
 const crawlComments = createCrawler('comments', get('created_time'), db.saveComments);
 const crawlReactions = createCrawler('reactions', constant(''), db.saveReactions);
 
-export { crawlPosts, crawlComments, crawlReactions };
+module.exports = { crawlPosts, crawlComments, crawlReactions };
 
