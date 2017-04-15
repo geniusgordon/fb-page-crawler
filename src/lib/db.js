@@ -28,7 +28,7 @@ function saveUsers(items) {
 
 const lazySaveComments = createLazySaveFn(
   comments => Comment.bulkCreate(comments, { ignoreDuplicates: true }),
-  1000,
+  1000
 );
 
 async function saveComments(items, meta) {
@@ -39,8 +39,8 @@ async function saveComments(items, meta) {
         userId: item.from.id,
         postId: meta.postId,
       },
-      pick(['id', 'message', 'like_count', 'parent', 'created_time'], item),
-    ),
+      pick(['id', 'message', 'like_count', 'parent', 'created_time'], item)
+    )
   );
   return lazySaveComments(comments);
 }
@@ -48,7 +48,7 @@ saveComments.flush = lazySaveComments.flush;
 
 const lazySaveReactions = createLazySaveFn(
   reactions => Reaction.bulkCreate(reactions, { ignoreDuplicates: true }),
-  1000,
+  1000
 );
 
 async function saveReactions(items, meta) {
@@ -59,8 +59,8 @@ async function saveReactions(items, meta) {
         userId: item.id,
         postId: meta.postId,
       },
-      pick(['type'], item),
-    ),
+      pick(['type'], item)
+    )
   );
   return lazySaveReactions(reactions);
 }

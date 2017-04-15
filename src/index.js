@@ -21,7 +21,7 @@ async function main() {
       {
         fields: 'from,like_count,created_time,message,message_tags',
       },
-      { postId: post.id },
+      { postId: post.id }
     );
     for (let comment of comments) {
       await crawler.crawlComments(
@@ -29,7 +29,7 @@ async function main() {
         {
           fields: 'from,like_count,created_time,message,message_tags',
         },
-        { postId: post.id },
+        { postId: post.id }
       );
     }
   }

@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) =>
         'HAHA',
         'SAD',
         'ANGRY',
-        'THANKFUL',
+        'THANKFUL'
       ),
     },
     {
       timestamps: false,
-    },
+    }
   );

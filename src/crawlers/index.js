@@ -30,7 +30,7 @@ function createCrawler(edge, getDisplayName = getId, saveData = noop) {
         if (saved > 0) {
           console.log(
             chalk.black.bgGreen(' DONE '),
-            `Lazy save ${saved} ${edge} ${getDisplayName(last)}`,
+            `Lazy save ${saved} ${edge} ${getDisplayName(last)}`
           );
         }
         data = data.concat(res.data);
@@ -52,12 +52,12 @@ const crawlPosts = createCrawler('posts', get('created_time'), db.savePosts);
 const crawlComments = createCrawler(
   'comments',
   get('created_time'),
-  db.saveComments,
+  db.saveComments
 );
 const crawlReactions = createCrawler(
   'reactions',
   constant(''),
-  db.saveReactions,
+  db.saveReactions
 );
 
 module.exports = { crawlPosts, crawlComments, crawlReactions };

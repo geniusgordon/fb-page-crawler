@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-     "format": "prettier --single-quote --trailing-comma=all --write \"src/**/*.js\"",
+     "format": "prettier --single-quote --trailing-comma=es5 --write \"src/**/*.js\"",
     "start": "node src",
     "test": "jest"
   },
