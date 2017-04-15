@@ -28,17 +28,20 @@ function createCrawler(edge, getDisplayName = getId, saveData = noop) {
         spinner.stopAndPersist(chalk.black.bgGreen(' DONE '));
         const saved = await saveData(res.data, meta);
         if (saved > 0) {
-          console.log(chalk.black.bgGreen(' DONE '), `Lazy save ${saved} ${edge} ${getDisplayName(last)}`);
+          console.log(
+            chalk.black.bgGreen(' DONE '),
+            `Lazy save ${saved} ${edge} ${getDisplayName(last)}`,
+          );
         }
         data = data.concat(res.data);
         Object.assign(options, res.paging);
 
-        if(!res.paging) {
+        if (!res.paging) {
           break;
         }
       } catch (error) {
         spinner.stopAndPersist(chalk.black.bgRed(' ERROR '));
-        throw(error);
+        throw error;
       }
     }
     return data;
@@ -46,8 +49,15 @@ function createCrawler(edge, getDisplayName = getId, saveData = noop) {
 }
 
 const crawlPosts = createCrawler('posts', get('created_time'), db.savePosts);
-const crawlComments = createCrawler('comments', get('created_time'), db.saveComments);
-const crawlReactions = createCrawler('reactions', constant(''), db.saveReactions);
+const crawlComments = createCrawler(
+  'comments',
+  get('created_time'),
+  db.saveComments,
+);
+const crawlReactions = createCrawler(
+  'reactions',
+  constant(''),
+  db.saveReactions,
+);
 
 module.exports = { crawlPosts, crawlComments, crawlReactions };
-

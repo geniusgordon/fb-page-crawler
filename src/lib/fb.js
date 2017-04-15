@@ -6,7 +6,7 @@ FB.options({ version: 'v2.8' });
 FB.apiP = (...args) =>
   new Promise((resolve, reject) => {
     FB.api(...args, res => {
-      if(!res || res.error) {
+      if (!res || res.error) {
         reject(!res ? new Error(args.toString()) : res.error);
         return;
       }
@@ -19,4 +19,3 @@ FB.apiP = (...args) =>
   });
 
 module.exports = FB;
-

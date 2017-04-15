@@ -17,4 +17,3 @@ describe('createLazySaveFn', () => {
     expect(saveFn.mock.calls[1][0]).toEqual([5, 6]);
   });
 });
-

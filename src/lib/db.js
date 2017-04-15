@@ -10,7 +10,7 @@ function createLazySaveFn(saveFn, threshold) {
     memoizedItems = [];
     return saved;
   };
-  const fn = (items) => {
+  const fn = items => {
     memoizedItems = memoizedItems.concat(items);
     if (memoizedItems.length >= threshold) {
       return save();
@@ -26,31 +26,41 @@ function saveUsers(items) {
   return User.bulkCreate(users, { ignoreDuplicates: true });
 }
 
-const lazySaveComments = createLazySaveFn(comments =>
-  Comment.bulkCreate(comments, { ignoreDuplicates: true }), 1000);
+const lazySaveComments = createLazySaveFn(
+  comments => Comment.bulkCreate(comments, { ignoreDuplicates: true }),
+  1000,
+);
 
 async function saveComments(items, meta) {
   const users = await saveUsers(items.map(get('from')));
   const comments = items.map(item =>
-    Object.assign({
-      userId: item.from.id,
-      postId: meta.postId,
-    }, pick(['id', 'message', 'like_count', 'parent', 'created_time'], item))
+    Object.assign(
+      {
+        userId: item.from.id,
+        postId: meta.postId,
+      },
+      pick(['id', 'message', 'like_count', 'parent', 'created_time'], item),
+    ),
   );
   return lazySaveComments(comments);
 }
 saveComments.flush = lazySaveComments.flush;
 
-const lazySaveReactions = createLazySaveFn(reactions =>
-  Reaction.bulkCreate(reactions, { ignoreDuplicates: true }), 1000);
+const lazySaveReactions = createLazySaveFn(
+  reactions => Reaction.bulkCreate(reactions, { ignoreDuplicates: true }),
+  1000,
+);
 
 async function saveReactions(items, meta) {
   const users = await saveUsers(items);
   const reactions = items.map(item =>
-    Object.assign({
-      userId: item.id,
-      postId: meta.postId,
-    }, pick(['type'], item))
+    Object.assign(
+      {
+        userId: item.id,
+        postId: meta.postId,
+      },
+      pick(['type'], item),
+    ),
   );
   return lazySaveReactions(reactions);
 }
@@ -70,4 +80,3 @@ module.exports = {
   savePosts,
   sequelize,
 };
-

@@ -26,4 +26,3 @@ Reaction.belongsTo(User);
 Reaction.belongsTo(Post);
 
 module.exports = { User, Post, Comment, Reaction, sequelize };
-

@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 const chalk = require('chalk');
 const { fb, db } = require('./lib');
 const crawler = require('./crawlers');
@@ -16,17 +16,24 @@ async function main() {
   const posts = await crawler.crawlPosts(pageId);
   for (let post of posts) {
     await crawler.crawlReactions(post.id, {}, { postId: post.id });
-    const comments = await crawler.crawlComments(post.id, {
-      fields: 'from,like_count,created_time,message,message_tags',
-    }, { postId: post.id });
-    for (let comment of comments) {
-      await crawler.crawlComments(comment.id, {
+    const comments = await crawler.crawlComments(
+      post.id,
+      {
         fields: 'from,like_count,created_time,message,message_tags',
-      }, { postId: post.id });
+      },
+      { postId: post.id },
+    );
+    for (let comment of comments) {
+      await crawler.crawlComments(
+        comment.id,
+        {
+          fields: 'from,like_count,created_time,message,message_tags',
+        },
+        { postId: post.id },
+      );
     }
   }
   console.log(chalk.black.bgGreen(' DONE '));
 }
 
 main().catch(logError);
-
